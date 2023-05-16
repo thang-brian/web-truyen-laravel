@@ -4,7 +4,8 @@
 - Laravel v10.7.1
 - PHP v8.2.5  
 - MySQL v8.0
-- MariaDB v10.11
+- PHPMyAdmin 
+- GraphQL
 
 # Requirements
 - Stable version of [Docker](https://docs.docker.com/engine/install/)
@@ -16,6 +17,8 @@
 - `docker-compose up -d`
 - `docker-compose exec php bash`
 - `composer setup`
+- `php artisan key:generate`
+- `php artisan migrate`
 
 ### From the second time onwards
 - `docker-compose up -d`
