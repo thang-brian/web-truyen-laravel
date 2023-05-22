@@ -15,6 +15,13 @@ use App\Models\Story;
 
 class DetailStoryQuery extends Query
 {
+    /**
+     * @param Story $story
+     */
+    public function __construct(protected Story $story)
+    {
+    }
+
     protected $attributes = [
         'name' => 'detailStory',
         'description' => 'A query'
@@ -38,6 +45,6 @@ class DetailStoryQuery extends Query
 
     public function resolve($root, array $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
-        return Story::with('categories')->findOrFail($args['id']);
+        return $this->story->with('categories')->findOrFail($args['id']);
     }
 }

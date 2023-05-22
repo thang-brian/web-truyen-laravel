@@ -10,7 +10,7 @@ class Story extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['title', 'avatar', 'author', 'user_id', 'total_chapter', 'type', 'content'];
+    protected $fillable = ['title', 'avatar', 'author', 'user_id', 'total_chapter', 'type', 'content', 'views_count'];
 
     public function categories()
     {

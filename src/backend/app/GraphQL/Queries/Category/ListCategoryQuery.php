@@ -14,6 +14,13 @@ use App\Models\Category;
 
 class ListCategoryQuery extends Query
 {
+    /**
+     * @param Category $category
+     */
+    public function __construct(protected Category $category)
+    {
+    }
+
     protected $attributes = [
         'name' => 'listCategory',
         'description' => 'A query'
@@ -33,6 +40,6 @@ class ListCategoryQuery extends Query
 
     public function resolve($root, array $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
-        return Category::all();
+        return $this->category->all();
     }
 }
