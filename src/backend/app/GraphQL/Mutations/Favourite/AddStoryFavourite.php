@@ -2,47 +2,39 @@
 
 declare(strict_types=1);
 
-namespace App\GraphQL\Queries\Chapter;
+namespace App\GraphQL\Mutations\Favourite;
 
 use Closure;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
-use Rebing\GraphQL\Support\Query;
+use Rebing\GraphQL\Support\Mutation;
 use Rebing\GraphQL\Support\SelectFields;
 use Rebing\GraphQL\Support\Facades\GraphQL;
-use App\Models\Chapter;
 use App\Models\Favourite;
+use App\Constants\FavouriteConstants;
 
-class DetailChapterQuery extends Query
+class AddStoryFavourite extends Mutation
 {
     /**
-     * @param Chapter $chapter
      * @param Favourite $favourite
      */
-    public function __construct(
-        protected Chapter $chapter,
-        protected Favourite $favourite
-    ) {
+    public function __construct(protected Favourite $favourite)
+    {
     }
 
     protected $attributes = [
-        'name' => 'detailChapter',
-        'description' => 'A query'
+        'name' => 'addStoryFavourite',
+        'description' => 'A mutation'
     ];
 
     public function type(): Type
     {
-        return GraphQL::type('Chapter');
+        return GraphQL::type('Favourite');
     }
 
     public function args(): array
     {
         return [
-            'id' => [
-                'name' => 'id',
-                'type' => Type::int(),
-                'rules' => ['required', 'exists:chapters,id']
-            ],
             'story_id' => [
                 'name' => 'story_id',
                 'type' => Type::int(),
@@ -54,16 +46,15 @@ class DetailChapterQuery extends Query
     public function resolve($root, array $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
         $userId = auth()->user()->id ?? 1;
-        $this->favourite->updateOrCreate(
+        $favouriteAdd = $this->favourite->updateOrCreate(
             [
                 'user_id' => $userId,
                 'story_id' => $args['story_id'],
             ],
             [
-                'chapter_id' => $args['id'],
+                'type' => FavouriteConstants::TYPE['FAVOURITE']
             ]
         );
-
-        return $this->chapter->findOrFail($args['id']);
+        return $favouriteAdd;
     }
 }

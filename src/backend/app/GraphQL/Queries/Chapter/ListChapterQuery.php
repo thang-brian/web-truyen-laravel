@@ -15,6 +15,13 @@ use App\Models\Chapter;
 
 class ListChapterQuery extends Query
 {
+    /**
+     * @param Chapter $chapter
+     */
+    public function __construct(protected Chapter $chapter)
+    {
+    }
+
     protected $attributes = [
         'name' => 'listChapter',
         'description' => 'A query'
@@ -50,6 +57,6 @@ class ListChapterQuery extends Query
 
     public function resolve($root, array $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
-        return Chapter::paginate($args['limit'], ['*'], 'page', $args['page']);
+        return $this->chapter->paginate($args['limit'], ['*'], 'page', $args['page']);
     }
 }

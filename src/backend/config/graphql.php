@@ -83,9 +83,12 @@ return [
 
                 'listChapter' => \App\GraphQL\Queries\Chapter\ListChapterQuery::class,
                 'detailChapter' => \App\GraphQL\Queries\Chapter\DetailChapterQuery::class,
+
+                'listHistoryOrFavourite' => \App\GraphQL\Queries\Favourite\ListHistoryOrFavourite::class,
             ],
             'mutation' => [
                 // ExampleMutation::class,
+                'addStoryFavourite' => \App\GraphQL\Mutations\Favourite\AddStoryFavourite::class,
             ],
             // The types only available in this schema
             'types' => [
@@ -93,6 +96,7 @@ return [
                 'Category' => \App\GraphQL\Types\CategoryType::class,
                 'Chapter' => \App\GraphQL\Types\ChapterType::class,
                 'Story' => \App\GraphQL\Types\StoryType::class,
+                'Favourite' => \App\GraphQL\Types\FavouriteType::class,
             ],
 
             // Laravel HTTP middleware

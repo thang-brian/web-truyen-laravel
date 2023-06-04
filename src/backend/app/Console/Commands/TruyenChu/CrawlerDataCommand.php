@@ -76,11 +76,12 @@ class CrawlerDataCommand extends Command
             sleep(5);
             $crawler = $client->request('GET', $linkContent);
 
-            // $avatarUrl = env('TRUYENCHU_URL') . $crawler->filter('div.col-xs-12.col-sm-4.col-md-4.info-holder > div > div > img')->eq(0)->attr('src');
-            // $contentAvatar = file_get_contents($avatarUrl);
-            // $name = substr($avatarUrl, strrpos($avatarUrl, '/') + 1);
-            // Storage::disk('public')->put('uploads/' . $name, $contentAvatar);
-            // dd($name);
+            $avatarUrl = env('TRUYENCHU_URL') . $crawler->filter('div.col-xs-12.col-sm-4.col-md-4.info-holder > div > div > img')->eq(0)->attr('src');
+            $contentAvatar = file_get_contents($avatarUrl);
+            $name = substr($avatarUrl, strrpos($avatarUrl, '/') + 1);
+            $fileNameUid = time() . "-" . $name;
+            Storage::disk('public')->put('uploads/' . $fileNameUid, $contentAvatar);
+            $pathImage = '/storage/uploads/' . $fileNameUid;
 
             $typeRaw = $crawler->filter('div.col-xs-12.col-sm-8.col-md-8.desc > div.info > div:nth-child(4) > span')->text();
             switch ($typeRaw) {
@@ -101,7 +102,8 @@ class CrawlerDataCommand extends Command
                 ],
                 [
                     'title' => $title,
-                    'avatar' => $crawler->filter('div.col-xs-12.col-sm-4.col-md-4.info-holder > div > div > img')->eq(0)->attr('src') ?? null,
+                    'avatar' => $pathImage,
+                    // 'avatar' => $crawler->filter('div.col-xs-12.col-sm-4.col-md-4.info-holder > div > div > img')->eq(0)->attr('src') ?? null,
                     'author' => $crawler->filter('div.info > div:nth-child(1) > a > span')->text(),
                     'type' => $type,
                     'content' => $crawler->filter('div.desc-text')->text()
@@ -124,18 +126,18 @@ class CrawlerDataCommand extends Command
                 $this->warn("Crawl category: " . $category);
                 // $newCategoriesId[] = $newCategory->id;
 
-                $newCategory->story()->sync($story->id);
+                // $newCategory->story()->sync($story->id);
 
-                // $categoryStory = CategoryStory::firstOrCreate(
-                //     [
-                //         'category_id' => $newCategory->id,
-                //         'story_id' => $story->id
-                //     ],
-                //     [
-                //         'category_id' => $newCategory->id,
-                //         'story_id' => $story->id
-                //     ]
-                // );
+                $categoryStory = CategoryStory::firstOrCreate(
+                    [
+                        'category_id' => $newCategory->id,
+                        'story_id' => $story->id
+                    ],
+                    [
+                        'category_id' => $newCategory->id,
+                        'story_id' => $story->id
+                    ]
+                );
             });
             // $story->categories()->sync($newCategoriesId);
             $this->crawlerListChapter($story->id, $slug, $story->title);

@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_story', function (Blueprint $table) {
-            $table->bigInteger('category_id');
-            $table->bigInteger('story_id');
-            $table->timestamps();
+        Schema::table('stories', function (Blueprint $table) {
+            $table->integer('views_count')->after('total_chapters')->nullable();
         });
     }
 
@@ -23,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_stories');
+        Schema::table('stories', function (Blueprint $table) {
+            $table->dropColumn('views_count');
+        });
     }
 };

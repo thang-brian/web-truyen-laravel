@@ -13,9 +13,18 @@ use Rebing\GraphQL\Support\SelectFields;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use App\GraphQL\Middleware\ResolvePage;
 use App\Models\Story;
+use Carbon\Carbon;
+use App\Constants\StoryConstants;
 
 class ListStoryQuery extends Query
 {
+    /**
+     * @param Story $story
+     */
+    public function __construct(protected Story $story)
+    {
+    }
+
     protected $attributes = [
         'name' => 'listStory',
         'description' => 'A query'
@@ -57,6 +66,10 @@ class ListStoryQuery extends Query
             'limit' => [
                 'name' => 'limit',
                 'type' => Type::int(),
+            ],
+            'readings' => [
+                'name' => 'readings',
+                'type' => Type::string(),
             ]
         ];
     }
@@ -78,8 +91,26 @@ class ListStoryQuery extends Query
                     $searchCate->where('id', $args['category_id']);
                 });
             }
+            if (isset($args['readings'])) {
+                switch ($args['readings']) {
+                    case StoryConstants::READINGS['DAILY_READINGS']:
+                        $query->whereDate('created_at', Carbon::today())->sum('views_count');
+                        break;
+                    case StoryConstants::READINGS['WEEKLY_READINGS']:
+                        $startDate = Carbon::now()->startOfWeek(); // Ngày bắt đầu của tuần hiện tại
+                        $endDate = Carbon::now()->endOfWeek(); // Ngày kết thúc của tuần hiện tại
+                        $query->whereBetween('created_at', [$startDate, $endDate])->sum('views_count');
+                        break;
+                    case StoryConstants::READINGS['MONTHLY_READINGS']:
+                        $query->whereMonth('created_at', Carbon::now()->month)->sum('views_count');
+                        break;
+                    default:
+                        $query->sum('views_count');
+                        break;
+                }
+            }
         };
-        return Story::where($searchKeyword)
+        return $this->story->where($searchKeyword)
             ->with('categories')
             ->paginate($args['limit'], ['*'], 'page', $args['page']);
     }
